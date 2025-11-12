@@ -1,0 +1,11 @@
+bin/
+obj/
+.vs/
+.vscode/
+*.user
+*.suo
+*.swp
+chat.db
+chat.db-shm
+chat.db-wal
+.DS_Store
