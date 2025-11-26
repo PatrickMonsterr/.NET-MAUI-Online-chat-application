@@ -1,41 +1,51 @@
+﻿using ChatApp.Server.Data;
+using ChatApp.Server.Hubs;
+using ChatApp.Server.Services;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
+// 1. Konfiguracja CORS (pozwala łączyć się z każdego miejsca)
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll", policy =>
+    {
+        policy.AllowAnyOrigin()
+              .AllowAnyMethod()
+              .AllowAnyHeader();
+    });
+});
+
+// 2. Baza danych SQLite
+builder.Services.AddDbContext<ChatDbContext>(options =>
+    options.UseSqlite("Data Source=chat.db"));
+
+// 3. SignalR (do komunikacji w czasie rzeczywistym)
+builder.Services.AddSignalR();
+
+// 4. Nasz serwis do logiki czatu
+builder.Services.AddScoped<ChatService>();
+
+// 5. Kontrolery (opcjonalnie, jeśli chciałbyś dodać REST API)
+builder.Services.AddControllers();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+// 6. Włączamy CORS
+app.UseCors("AllowAll");
+
+// 7. Automatyczne tworzenie bazy danych przy starcie (Zastępuje 'dotnet ef database update')
+using (var scope = app.Services.CreateScope())
 {
-    app.MapOpenApi();
+    var db = scope.ServiceProvider.GetRequiredService<ChatDbContext>();
+    db.Database.EnsureCreated();
 }
 
-app.UseHttpsRedirection();
+app.UseRouting();
 
-var summaries = new[]
-{
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
+// 8. Endpoint dla SignalR
+app.MapHub<ChatHub>("/chatHub");
 
-app.MapGet("/weatherforecast", () =>
-{
-    var forecast =  Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast
-        (
-            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            Random.Shared.Next(-20, 55),
-            summaries[Random.Shared.Next(summaries.Length)]
-        ))
-        .ToArray();
-    return forecast;
-})
-.WithName("GetWeatherForecast");
+app.MapControllers();
 
 app.Run();
-
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}

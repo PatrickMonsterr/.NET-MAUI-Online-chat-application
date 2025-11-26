@@ -1,0 +1,86 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ChatApp.Client.Views.ChatPage"
+             Title="Chat Publiczny">
+
+    <Grid RowDefinitions="Auto,*,Auto,Auto" Padding="10" RowSpacing="10">
+
+        <!-- Status i Nick Input -->
+        <VerticalStackLayout Grid.Row="0" Spacing="10">
+            <Label Text="{Binding StatusMessage}" 
+                   FontSize="14" 
+                   TextColor="Gray"/>
+
+            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="5">
+                <!-- USUNIĘTO: IsEnabled z konwerterem -->
+                <!-- Zamiast tego pole będzie zawsze aktywne, co jest ok na start -->
+                <Entry x:Name="NickEntry"
+                       Placeholder="Wpisz nick"
+                       Text="{Binding NickName}"
+                       Grid.Column="0"/>
+
+                <Button Command="{Binding ConnectCommand}"
+        Grid.Column="1"
+        Padding="10">
+                    <Button.Triggers>
+                        <DataTrigger TargetType="Button" Binding="{Binding IsConnected}" Value="True">
+                            <Setter Property="Text" Value="Rozłącz" />
+                            <Setter Property="BackgroundColor" Value="DarkRed" />
+                        </DataTrigger>
+                        <DataTrigger TargetType="Button" Binding="{Binding IsConnected}" Value="False">
+                            <Setter Property="Text" Value="Połącz" />
+                            <Setter Property="BackgroundColor" Value="#512BD4" />
+                        </DataTrigger>
+                    </Button.Triggers>
+                </Button>
+
+            </Grid>
+        </VerticalStackLayout>
+
+        <!-- Czat - Lista Wiadomości -->
+        <CollectionView ItemsSource="{Binding Messages}" 
+                        Grid.Row="1"
+                        SelectionMode="None">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <VerticalStackLayout Padding="10" Spacing="5">
+                        <Grid ColumnDefinitions="Auto,*,Auto">
+                            <Label Text="{Binding NickName}" 
+                                   FontAttributes="Bold"
+                                   FontSize="12"
+                                   Grid.Column="0"/>
+                            <Label Text="{Binding Timestamp, StringFormat='{0:HH:mm:ss}'}"
+                                   FontSize="10"
+                                   TextColor="Gray"
+                                   Grid.Column="2"
+                                   HorizontalTextAlignment="End"/>
+                        </Grid>
+                        <Label Text="{Binding Content}" 
+                               FontSize="14"
+                               LineBreakMode="WordWrap"/>
+                        <BoxView HeightRequest="1" Color="LightGray"/>
+                    </VerticalStackLayout>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+        <!-- Separator -->
+        <BoxView Grid.Row="2" HeightRequest="1" Color="Gray"/>
+
+        <!-- Input + Wyślij -->
+        <Grid Grid.Row="3" ColumnDefinitions="*,Auto" ColumnSpacing="5">
+            <Entry x:Name="MessageEntry"
+                   Placeholder="Wpisz wiadomość..."
+                   Text="{Binding MessageText}"
+                   IsEnabled="{Binding IsConnected}"
+                   Grid.Column="0"/>
+
+            <Button Text="Wyślij"
+                    Command="{Binding SendMessageCommand}"
+                    IsEnabled="{Binding IsConnected}"
+                    Grid.Column="1"
+                    Padding="15"/>
+        </Grid>
+    </Grid>
+</ContentPage>

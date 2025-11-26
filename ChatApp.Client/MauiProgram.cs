@@ -1,24 +1,37 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using CommunityToolkit.Mvvm;
+using ChatApp.Client.Views;
+using ChatApp.Client.ViewModels;
 
 namespace ChatApp.Client;
 
 public static class MauiProgram
 {
-	public static MauiApp CreateMauiApp()
-	{
-		var builder = MauiApp.CreateBuilder();
-		builder
-			.UseMauiApp<App>()
-			.ConfigureFonts(fonts =>
-			{
-				fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
-				fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
-			});
+    public static MauiApp CreateMauiApp()
+    {
+        var builder = MauiApp.CreateBuilder();
+        builder
+            .UseMauiApp<App>()
+            .ConfigureFonts(fonts =>
+            {
+                fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
+            })
+            .RegisterViews()
+            .RegisterViewModels();
 
-#if DEBUG
-		builder.Logging.AddDebug();
-#endif
+        return builder.Build();
+    }
 
-		return builder.Build();
-	}
+    public static MauiAppBuilder RegisterViews(this MauiAppBuilder mauiAppBuilder)
+    {
+        mauiAppBuilder.ConfigureFonts(fonts =>
+        {
+            fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
+        });
+        return mauiAppBuilder;
+    }
+
+    public static MauiAppBuilder RegisterViewModels(this MauiAppBuilder mauiAppBuilder)
+    {
+        return mauiAppBuilder;
+    }
 }
