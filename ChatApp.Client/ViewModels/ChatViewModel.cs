@@ -56,7 +56,7 @@ public partial class ChatViewModel : ObservableObject
             // UWAGA: Sprawdź w terminalu serwera, jaki masz port!
             // Zwykle jest to http://localhost:5xxx
             // Spróbujmy użyć obu najpopularniejszych:
-            string url = "http://172.19.5.154:5022";
+            string url = "http://localhost:5022";
 
             // Jeśli serwer wyświetlał np. 5234, wpisz tutaj 5234!
 
