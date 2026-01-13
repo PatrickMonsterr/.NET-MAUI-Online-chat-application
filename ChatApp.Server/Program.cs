@@ -18,7 +18,7 @@ builder.Services.AddCors(options =>
 
 // 2. Baza danych SQLite
 builder.Services.AddDbContext<ChatDbContext>(options =>
-    options.UseSqlite("Data Source=chat.db"));
+    options.UseSqlite($"Data Source={Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "chat.db")})"));
 
 // 3. SignalR (do komunikacji w czasie rzeczywistym)
 builder.Services.AddSignalR();
@@ -48,4 +48,4 @@ app.MapHub<ChatHub>("/chatHub");
 
 app.MapControllers();
 
-app.Run();
+app.Run("http://0.0.0.0:5022");
