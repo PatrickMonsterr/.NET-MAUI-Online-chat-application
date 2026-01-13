@@ -2,115 +2,150 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="ChatApp.Client.Views.ChatPage"
-             Title="Chat Publiczny"
-             BackgroundColor="#1a1a2e">
+             Title="Chat">
 
-    <Grid RowDefinitions="Auto,*,Auto" Padding="0" RowSpacing="0">
+    <Grid RowDefinitions="Auto,*,Auto" RowSpacing="0">
 
-        <!-- Nagłówek -->
-        <StackLayout Grid.Row="0" 
-                     Padding="16,12" 
-                     BackgroundColor="#16213e"
-                     Spacing="4">
+        <!-- Header -->
+        <Grid Grid.Row="0" Padding="16,14" Background="{StaticResource HeaderBrush}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
 
-            <Label Text="💬 Chat Publiczny" 
-                   FontSize="18" 
-                   FontAttributes="Bold"
-                   TextColor="#ffb703"/>
-            <Label Text="{Binding StatusMessage}" 
-                   FontSize="12" 
-                   TextColor="#888888"/>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
 
-            <!-- Przycisk Połącz (tylko gdy nie połączony) -->
-            <Button IsVisible="{Binding IsConnected, Converter={StaticResource InvertedBoolConverter}}"
+            <VerticalStackLayout Grid.Row="0" Grid.Column="0" Spacing="2">
+                <Label Text="Chat publiczny"
+                       FontSize="18"
+                       FontAttributes="Bold" />
+                <Label Text="{Binding StatusMessage}"
+                       FontSize="12"
+                       TextColor="{StaticResource ColorText2}" />
+            </VerticalStackLayout>
+
+            <Button Grid.Row="0" Grid.Column="1"
+                    Text="Połącz"
                     Command="{Binding ConnectCommand}"
-                    Padding="12,8"
-                    FontAttributes="Bold"
-                    FontSize="12"
-                    Text="🔗 Wpisz nick i się połącz"
-                    BackgroundColor="#ffb703"
-                    TextColor="#1a1a2e"
-                    Margin="0,8,0,0"/>
-        </StackLayout>
+                    Background="{StaticResource PrimaryButtonBrush}"
+                    Padding="18,0">
+                <Button.Triggers>
+                    <DataTrigger TargetType="Button" Binding="{Binding IsConnected}" Value="True">
+                        <Setter Property="Text" Value="Rozłącz" />
+                        <Setter Property="BackgroundColor" Value="{StaticResource ColorDanger}" />
+                    </DataTrigger>
+                </Button.Triggers>
+            </Button>
 
-        <!-- Lista Wiadomości -->
-        <ScrollView Grid.Row="1" BackgroundColor="#1a1a2e">
-            <StackLayout Padding="12,12,12,0" Spacing="8" BindableLayout.ItemsSource="{Binding Messages}">
-                <BindableLayout.ItemTemplate>
-                    <DataTemplate>
-                        <Frame CornerRadius="12"
-                               Padding="12,10"
-                               HasShadow="False"
-                               BackgroundColor="#ffffff">
+            <Label Grid.Row="1" Grid.ColumnSpan="2"
+                   Text="Wpisz nick, połącz się i pisz wiadomości."
+                   FontSize="11"
+                   TextColor="{StaticResource ColorText2}"
+                   Margin="0,10,0,0" />
+        </Grid>
 
-                            <!-- Żółta dla "Patryk", biała dla innych -->
-                            <Frame.Triggers>
-                                <DataTrigger TargetType="Frame" 
-                                             Binding="{Binding NickName}" 
-                                             Value="Patryk">
-                                    <Setter Property="BackgroundColor" Value="#ffb703" />
+        <!-- Messages -->
+        <CollectionView Grid.Row="1"
+                        ItemsSource="{Binding Messages}"
+                        SelectionMode="None">
+            <CollectionView.ItemsLayout>
+                <LinearItemsLayout Orientation="Vertical" ItemSpacing="10" />
+            </CollectionView.ItemsLayout>
+
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Grid Padding="12,0">
+                        <Border StrokeThickness="0"
+                                StrokeShape="RoundRectangle 16"
+                                Background="{StaticResource ColorSurface0}"
+                                Padding="12,10"
+                                HorizontalOptions="Start"
+                                MaximumWidthRequest="520">
+
+                            <Border.Triggers>
+                                <DataTrigger TargetType="Border" Binding="{Binding IsMine}" Value="True">
+                                    <Setter Property="Background" Value="{StaticResource PrimaryButtonBrush}" />
+                                    <Setter Property="HorizontalOptions" Value="End" />
                                 </DataTrigger>
-                            </Frame.Triggers>
+                            </Border.Triggers>
 
-                            <StackLayout Spacing="4">
-                                <Label Text="{Binding NickName}" 
-                                       FontSize="11" 
+                            <VerticalStackLayout Spacing="4">
+                                <Label Text="{Binding NickName}"
+                                       FontSize="11"
                                        FontAttributes="Bold"
-                                       TextColor="#666666"/>
-                                <Label Text="{Binding Content}" 
+                                       TextColor="{StaticResource ColorText1}">
+                                    <Label.Triggers>
+                                        <DataTrigger TargetType="Label" Binding="{Binding IsMine}" Value="True">
+                                            <Setter Property="TextColor" Value="{StaticResource ColorText0}" />
+                                        </DataTrigger>
+                                    </Label.Triggers>
+                                </Label>
+
+                                <Label Text="{Binding Content}"
                                        FontSize="14"
-                                       TextColor="#1a1a2e"
-                                       LineBreakMode="WordWrap"/>
+                                       LineBreakMode="WordWrap" />
+
                                 <Label Text="{Binding Timestamp, StringFormat='{0:HH:mm}'}"
                                        FontSize="10"
-                                       TextColor="#999999"/>
-                            </StackLayout>
-                        </Frame>
-                    </DataTemplate>
-                </BindableLayout.ItemTemplate>
-            </StackLayout>
-        </ScrollView>
+                                       TextColor="{StaticResource ColorText2}"
+                                       HorizontalOptions="End">
+                                    <Label.Triggers>
+                                        <DataTrigger TargetType="Label" Binding="{Binding IsMine}" Value="True">
+                                            <Setter Property="TextColor" Value="{StaticResource ColorText0}" />
+                                            <Setter Property="Opacity" Value="0.85" />
+                                        </DataTrigger>
+                                    </Label.Triggers>
+                                </Label>
+                            </VerticalStackLayout>
 
-        <!-- Input do wiadomości -->
-        <StackLayout Grid.Row="2" 
-                     Padding="12"
-                     Spacing="8"
-                     BackgroundColor="#16213e">
+                        </Border>
+                    </Grid>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
 
-            <!-- Input nicku (widoczny tylko gdy nie połączony) -->
-            <StackLayout IsVisible="{Binding IsConnected, Converter={StaticResource InvertedBoolConverter}}"
-                         Spacing="6">
-                <Label Text="Nick:" FontSize="12" TextColor="#ffb703" FontAttributes="Bold"/>
-                <Entry Placeholder="Wpisz nick..."
-                       Text="{Binding NickName}"
-                       BackgroundColor="#0f3460"
-                       TextColor="#ffffff"
-                       FontSize="14"/>
-            </StackLayout>
+        <!-- Composer -->
+        <Grid Grid.Row="2" Padding="12" Background="{StaticResource HeaderBrush}" RowSpacing="10">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
 
-            <!-- Input wiadomości -->
-            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+            <!-- Nickname (only when disconnected) -->
+            <Grid Grid.Row="0"
+                  IsVisible="{Binding IsConnected, Converter={StaticResource InvertedBoolConverter}}"
+                  ColumnDefinitions="*,Auto"
+                  ColumnSpacing="10">
                 <Entry Grid.Column="0"
-                       Placeholder="Napisz wiadomość..."
+                       Placeholder="Twój nick"
+                       Text="{Binding NickName}" />
+                <Button Grid.Column="1"
+                        Text="Połącz"
+                        Command="{Binding ConnectCommand}"
+                        Background="{StaticResource PrimaryButtonBrush}"
+                        Padding="18,0" />
+            </Grid>
+
+            <!-- Message -->
+            <Grid Grid.Row="1" ColumnDefinitions="*,Auto" ColumnSpacing="10">
+                <Entry Grid.Column="0"
+                       Placeholder="Napisz wiadomość…"
                        Text="{Binding MessageText}"
                        IsEnabled="{Binding IsConnected}"
-                       BackgroundColor="#0f3460"
-                       TextColor="#ffffff"
-                       FontSize="14"/>
+                       ReturnType="Send"
+                       ReturnCommand="{Binding SendMessageCommand}" />
 
                 <Button Grid.Column="1"
-                        Text="➤"
+                        Text="Wyślij"
                         Command="{Binding SendMessageCommand}"
                         IsEnabled="{Binding IsConnected}"
-                        BackgroundColor="#ffb703"
-                        TextColor="#1a1a2e"
-                        Padding="12"
-                        FontSize="16"
-                        FontAttributes="Bold"
-                        WidthRequest="50"/>
+                        Background="{StaticResource PrimaryButtonBrush}"
+                        Padding="18,0" />
             </Grid>
-        </StackLayout>
+        </Grid>
 
     </Grid>
-
 </ContentPage>

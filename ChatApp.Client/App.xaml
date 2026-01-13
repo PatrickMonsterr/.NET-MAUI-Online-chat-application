@@ -1,15 +1,72 @@
-﻿<?xml version = "1.0" encoding = "UTF-8" ?>
+﻿<?xml version="1.0" encoding="UTF-8" ?>
 <Application xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="ChatApp.Client.App"
              xmlns:local="clr-namespace:ChatApp.Client.Converters">
+
     <Application.Resources>
         <ResourceDictionary>
-            <!-- Konwertery -->
-            <local:InvertedBoolConverter x:Key="InvertedBoolConverter" />
 
-            <Color x:Key="PageBackgroundColor">#512BD4</Color>
-            <Color x:Key="PrimaryTextColor">White</Color>
+            <!-- Converters -->
+            <local:InvertedBoolConverter x:Key="InvertedBoolConverter" />
+            <local:EqualConverter x:Key="EqualConverter" />
+            <local:NotEqualConverter x:Key="NotEqualConverter" />
+
+            <!-- Theme -->
+            <Color x:Key="ColorBg0">#0B1020</Color>
+            <Color x:Key="ColorBg1">#0F1A33</Color>
+            <Color x:Key="ColorSurface0">#121C38</Color>
+            <Color x:Key="ColorSurface1">#172449</Color>
+
+            <Color x:Key="ColorText0">#F3F6FF</Color>
+            <Color x:Key="ColorText1">#B9C2DD</Color>
+            <Color x:Key="ColorText2">#7F8AB0</Color>
+
+            <Color x:Key="ColorAccent0">#8B5CF6</Color>
+            <Color x:Key="ColorAccent1">#22D3EE</Color>
+            <Color x:Key="ColorDanger">#FB7185</Color>
+
+            <!-- Brushes -->
+            <LinearGradientBrush x:Key="AppBackgroundBrush" StartPoint="0,0" EndPoint="1,1">
+                <GradientStop Color="{StaticResource ColorBg0}" Offset="0.0" />
+                <GradientStop Color="{StaticResource ColorBg1}" Offset="0.6" />
+                <GradientStop Color="#081127" Offset="1.0" />
+            </LinearGradientBrush>
+
+            <LinearGradientBrush x:Key="HeaderBrush" StartPoint="0,0" EndPoint="1,0">
+                <GradientStop Color="{StaticResource ColorSurface0}" Offset="0.0" />
+                <GradientStop Color="{StaticResource ColorSurface1}" Offset="1.0" />
+            </LinearGradientBrush>
+
+            <LinearGradientBrush x:Key="PrimaryButtonBrush" StartPoint="0,0" EndPoint="1,1">
+                <GradientStop Color="{StaticResource ColorAccent0}" Offset="0.0" />
+                <GradientStop Color="{StaticResource ColorAccent1}" Offset="1.0" />
+            </LinearGradientBrush>
+
+            <!-- Global Styles -->
+            <Style TargetType="ContentPage">
+                <Setter Property="Background" Value="{StaticResource AppBackgroundBrush}" />
+            </Style>
+
+            <Style TargetType="Label">
+                <Setter Property="TextColor" Value="{StaticResource ColorText0}" />
+            </Style>
+
+            <Style TargetType="Entry">
+                <Setter Property="BackgroundColor" Value="{StaticResource ColorSurface0}" />
+                <Setter Property="TextColor" Value="{StaticResource ColorText0}" />
+                <Setter Property="PlaceholderColor" Value="{StaticResource ColorText2}" />
+                <Setter Property="FontSize" Value="14" />
+                <Setter Property="HeightRequest" Value="44" />
+            </Style>
+
+            <Style TargetType="Button">
+                <Setter Property="TextColor" Value="{StaticResource ColorText0}" />
+                <Setter Property="CornerRadius" Value="14" />
+                <Setter Property="FontAttributes" Value="Bold" />
+                <Setter Property="HeightRequest" Value="44" />
+            </Style>
+
         </ResourceDictionary>
     </Application.Resources>
 </Application>

@@ -53,12 +53,8 @@ public partial class ChatViewModel : ObservableObject
         {
             StatusMessage = "Łączenie...";
 
-            // UWAGA: Sprawdź w terminalu serwera, jaki masz port!
-            // Zwykle jest to http://localhost:5xxx
-            // Spróbujmy użyć obu najpopularniejszych:
+            // UWAGA: dostosuj adres do swojego serwera.
             string url = "http://192.168.1.5:5022";
-
-            // Jeśli serwer wyświetlał np. 5234, wpisz tutaj 5234!
 
             await _hubClient.ConnectAsync(url);
         }
@@ -68,16 +64,19 @@ public partial class ChatViewModel : ObservableObject
         }
     }
 
-
     [RelayCommand]
     public async Task SendMessage()
     {
+        if (!IsConnected)
+            return;
+
         if (string.IsNullOrWhiteSpace(MessageText))
             return;
 
         try
         {
-            await _hubClient.SendMessageAsync(NickName!, MessageText);
+            var text = MessageText.Trim();
+            await _hubClient.SendMessageAsync(NickName!, text);
             MessageText = string.Empty;
         }
         catch (Exception ex)
@@ -86,7 +85,7 @@ public partial class ChatViewModel : ObservableObject
         }
     }
 
-    private async Task OnMessageReceived(string nickName, string content, DateTime timestamp)
+    private Task OnMessageReceived(string nickName, string content, DateTime timestamp)
     {
         MainThread.BeginInvokeOnMainThread(() =>
         {
@@ -94,9 +93,12 @@ public partial class ChatViewModel : ObservableObject
             {
                 NickName = nickName,
                 Content = content,
-                Timestamp = timestamp
+                Timestamp = timestamp,
+                IsMine = string.Equals(nickName, NickName, StringComparison.Ordinal)
             });
         });
+
+        return Task.CompletedTask;
     }
 
     private async Task OnConnected()
@@ -108,23 +110,37 @@ public partial class ChatViewModel : ObservableObject
             Messages.Clear();
         });
 
-        var history = await _hubClient.GetChatHistoryAsync();
-        MainThread.BeginInvokeOnMainThread(() =>
+        try
         {
-            foreach (var msg in history)
+            var history = await _hubClient.GetChatHistoryAsync();
+
+            MainThread.BeginInvokeOnMainThread(() =>
             {
-                Messages.Add(msg);
-            }
-        });
+                foreach (var msg in history)
+                {
+                    msg.IsMine = string.Equals(msg.NickName, NickName, StringComparison.Ordinal);
+                    Messages.Add(msg);
+                }
+            });
+        }
+        catch (Exception ex)
+        {
+            MainThread.BeginInvokeOnMainThread(() =>
+            {
+                StatusMessage = $"Połączono, ale nie udało się pobrać historii: {ex.Message}";
+            });
+        }
     }
 
-    private async Task OnDisconnected()
+    private Task OnDisconnected()
     {
         MainThread.BeginInvokeOnMainThread(() =>
         {
             IsConnected = false;
             StatusMessage = "Rozłączono";
         });
+
+        return Task.CompletedTask;
     }
 
     public async Task Disconnect()
