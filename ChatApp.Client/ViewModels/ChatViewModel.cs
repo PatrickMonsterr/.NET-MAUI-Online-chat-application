@@ -105,18 +105,12 @@ public partial class ChatViewModel : ObservableObject
         {
             IsConnected = true;
             StatusMessage = $"Połączono jako {NickName}";
-            Messages.Clear();
+            Messages.Clear(); // wyczyść listę wiadomości po połączeniu
         });
 
-        var history = await _hubClient.GetChatHistoryAsync();
-        MainThread.BeginInvokeOnMainThread(() =>
-        {
-            foreach (var msg in history)
-            {
-                Messages.Add(msg);
-            }
-        });
+      
     }
+
 
     private async Task OnDisconnected()
     {

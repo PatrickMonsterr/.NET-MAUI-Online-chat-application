@@ -70,27 +70,7 @@ public class ChatHubClient
         }
     }
 
-    public async Task<List<Message>> GetChatHistoryAsync()
-    {
-        if (_connection?.State == HubConnectionState.Connected)
-        {
-            try
-            {
-                var result = await _connection.InvokeAsync<List<dynamic>>("GetChatHistory");
-                return result?.Select(m => new Message
-                {
-                    NickName = m.NickName,
-                    Content = m.Content,
-                    Timestamp = m.Timestamp
-                }).ToList() ?? new List<Message>();
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"Błąd pobierania historii: {ex.Message}");
-            }
-        }
-        return new List<Message>();
-    }
+
 
     public async Task DisconnectAsync()
     {
