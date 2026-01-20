@@ -53,8 +53,7 @@ public partial class ChatViewModel : ObservableObject
         {
             StatusMessage = "Łączenie...";
 
-            // UWAGA: dostosuj adres do swojego serwera.
-            string url = "http://192.168.1.5:5022";
+            string url = "http://localhost:5022";
 
             await _hubClient.ConnectAsync(url);
         }
