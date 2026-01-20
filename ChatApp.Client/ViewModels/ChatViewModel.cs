@@ -100,7 +100,7 @@ public partial class ChatViewModel : ObservableObject
         return Task.CompletedTask;
     }
 
-    private async Task OnConnected()
+    private Task OnConnected()
     {
         MainThread.BeginInvokeOnMainThread(() =>
         {
@@ -109,27 +109,9 @@ public partial class ChatViewModel : ObservableObject
             Messages.Clear();
         });
 
-        try
-        {
-            var history = await _hubClient.GetChatHistoryAsync();
-
-            MainThread.BeginInvokeOnMainThread(() =>
-            {
-                foreach (var msg in history)
-                {
-                    msg.IsMine = string.Equals(msg.NickName, NickName, StringComparison.Ordinal);
-                    Messages.Add(msg);
-                }
-            });
-        }
-        catch (Exception ex)
-        {
-            MainThread.BeginInvokeOnMainThread(() =>
-            {
-                StatusMessage = $"Połączono, ale nie udało się pobrać historii: {ex.Message}";
-            });
-        }
+        return Task.CompletedTask;
     }
+
 
     private Task OnDisconnected()
     {

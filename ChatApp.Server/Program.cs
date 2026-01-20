@@ -2,7 +2,7 @@
 
 var builder = WebApplication.CreateBuilder(args);
 
-// 1. Konfiguracja CORS (pozwala łączyć się z każdego miejsca)
+// 1. Konfiguracja CORS 
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll", policy =>
@@ -13,15 +13,12 @@ builder.Services.AddCors(options =>
     });
 });
 
-// 2. SignalR (do komunikacji w czasie rzeczywistym)
+// 2. SignalR
 builder.Services.AddSignalR();
 
-// 3. Kontrolery (jeśli kiedyś dodasz REST API – mogą zostać)
 builder.Services.AddControllers();
-
 var app = builder.Build();
 
-// 4. Włączamy CORS
 app.UseCors("AllowAll");
 
 app.UseRouting();
